@@ -1,0 +1,21 @@
+{% extends 'phonebook/base.html' %}
+{% block body %}
+<h1 class="display-4">Recent activity</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">view</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in recent %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{item}}</td>
+      <td><a href="">✏</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock body %}

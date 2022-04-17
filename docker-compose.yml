@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    database:
+        image: "postgres:10-alpine"
+        ports:
+            - 5432:5432
+        environment: 
+            POSTGRES_USER: hamzeh
+            POSTGRES_PASSWORD: hamzeh1378
+            PGPASSWORD: hamzeh1378
+            POSTGRES_DB: contacts
+            PGDATA: /db_data
+        volumes: 
+            - contactsDbData:/db_data
+    cache:
+        image: "memcached:alpine"
+        ports:
+            - 11211:11211                    
+volumes:
+    contactsDbData:
+    

@@ -1,0 +1,59 @@
+{% extends 'phonebook/base.html' %}
+{% block body %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+<form class="form-inline my-2 my-lg-0" id="search_form">
+    <h5> {% trans "phonenumber" %}:</h5>
+    <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="query">
+    <select class="form-control" id="mode">
+        <option value="1">find the exact number</option>
+        <option value="2">number that start with your input </option>
+        <option value="3">number that ends with your input</option>
+        <option value="4">number that contain your input</option>
+    </select>
+</form>
+<button class="btn btn-outline-success my-2 my-sm-0" id="search-btn">🔎</button>
+<div id="output-div"></div>
+
+{% endblock body %}
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        $('#search-btn').click(function () {
+            var query_text = $('#query').val();
+            var selected_mod = $('#mode').val();
+            if (selected_mod == '3' ){
+                query_text = '.*'+query_text+'$' //parse entry to regex for searching end of phone numbers
+            }
+            var ajax_config = {
+                url: "/api/v1/contact/",
+                data: {
+                    search: query_text,
+                    mode : selected_mod
+                },
+                method: 'GET',
+                success: function (response) {
+                    var my_output_div = $('#output-div');
+                    var table = "";
+                    $(response).each(function (index, obj) {
+                        console.log(obj);
+                        var my_table = '<tr><td>' + obj.first_name + '</td><td>' + obj.last_name + '</td><td>' + obj.phone_number + '</td></tr>';
+                        table = table + my_table;
+                    });
+                    if (my_output_div.is(':empty')) {
+                        final_table = '<table class="table table-bordered table-striped" ><thead><tr><th>{% trans "firstname" %}</th><th>{% trans "lastname" %}</th><th>{% trans "phonenumber" %}</th></tr></thead><tbody>' + table + '</tbody></table>';
+                        my_output_div.append(final_table);
+                        my_output_div.append(response.length + ' resault found');
+                    } else {
+                        my_output_div.empty();
+                        final_table = '<table class="table table-bordered table-striped" ><tr><th>{% trans "firstname" %}</th><th>{% trans "lastname" %}</th><th>{% trans "phonenumber" %}</th></tr>' + table + '</table>';
+                        my_output_div.append(final_table);
+                        my_output_div.append(response.length + ' resault found');
+                    }
+                }
+            }
+            $.ajax(ajax_config);
+        });
+    });
+</script>
+{% endblock scripts %}
